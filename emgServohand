@@ -1,0 +1,34 @@
+#include <Servo.h>
+
+Servo fingers, thumb; // 2 servos, 1 for the fingers and 1 for the thumb
+
+int angle = 0;
+int sensorVal;
+int threshold = 35; // lowest value tested for flexing forarms (highest was 100)
+
+void setup() {
+
+  pinMode(A4,INPUT);
+
+  fingers.attach(9); // attaching servos to pwm pins
+  thumb.attach(10);
+  Serial.begin(115200);
+  
+}
+
+void loop() {
+  // read the input on analog pin A5
+  sensorVal = analogRead(A5);
+  int signal_ = map(sensorVal, 0.0, 1023.0, 0.0, 100.0); //mapping the alalog signal between 0 - 100
+
+  if(signal_ > threshold){ // if the signal is above 50
+// close the hand
+      angle = 180;
+    } else{ // else open the hand
+    angle = 0;
+  }
+  fingers.write(angle);
+  thumb.write(180 - angle); //servo to turn in the opposite direction so they dont hit eachother
+  Serial.println(signal_);
+  delay(10);
+}
